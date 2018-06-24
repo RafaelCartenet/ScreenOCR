@@ -27,14 +27,18 @@ class Box:
         print 'DONE!'
         self.x2, self.y2 = mouse.position()
         print '\n',64*'#','\n\n',19*' ','END OF THE BOX CALIBRATION','\n\n',64*'#'
+        self.update_width_height()
 
-    def set_corners(coordinates):
+    def update_width_height(self):
+        self.width = abs(self.x2 - self.x1)
+        self.height = abs(self.y2 - self.y1)
+
+    def set_corners(self, coordinates):
         self.x1= coordinates['x1']
         self.y1= coordinates['y1']
         self.x2= coordinates['x2']
         self.y2= coordinates['y2']
-        self.width = abs(self.x2 - self.x1)
-        self.height = abs(self.y2 - self.y1)
+        self.update_width_height()
 
     def load_sub_boxes(self, config_file):
         """
@@ -50,23 +54,27 @@ class Box:
             box_name, x1, y1, x2, y2 = sub_box.split(' ')
             self.sub_boxes[box_name] = Box()
             self.sub_boxes[box_name].set_corners({
-                'x1': self.x1 + x1 * self.width,
-                'y1': self.y1 + y1 * self.height,
-                'x2': self.x1 + x2 * self.height,
-                'y2': self.y1 + y2 * self.height,
+                'x1': self.x1 + float(x1) * self.width,
+                'y1': self.y1 + float(y1) * self.height,
+                'x2': self.x1 + float(x2) * self.width,
+                'y2': self.y1 + float(y2) * self.height,
             })
 
     def get_text(self):
         grab_time = time.time()
         image= ImageGrab.grab(bbox=(self.x1, self.y1, self.x2, self.y2))
-        print 'screenshot', time.time() - grab_time
+        # print 'screenshot', time.time() - grab_time
 
         crop_time = time.time()
-        print 'crop', time.time() - crop_time
+        # print 'crop', time.time() - crop_time
 
         OCR_time = time.time()
         text = pytesseract.image_to_string(image, lang='fra')
-        text = text.split('_')
-        for t in text:
-            print t.strip()
-        print 'OCR', time.time() - OCR_time
+        # print 'OCR', time.time() - OCR_time
+        return text
+
+
+    def get_sub_box_text(self, box_name):
+        if box_name not in self.sub_boxes:
+            raise ValueError('No sub box called %s:'% box_name)
+        return self.sub_boxes[box_name].get_text()
