@@ -24,7 +24,7 @@ class Box:
         raw_input('Press ENTER to capture mouse position')
         print 'DONE!'
         self.brc_x, self.brc_y = mouse.position()
-        print '\n',64*'#','\n\n',19*' ','END OF THE BOX CALIBRATION','\n\n',64*'#'
+        print '\n',64*'#','\n\n',19*' ','END OF BOX CALIBRATION','\n\n',64*'#'
 
         self.box = (self.tlc_x, self.tlc_y, self.brc_x, self.brc_y)
         self.update_width_height()
